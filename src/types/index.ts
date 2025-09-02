@@ -16,10 +16,16 @@ export type QualitativeData = {
   analysis: SentimentAnalysis;
 };
 
+export type LaunchPhase = {
+  phaseName: string;
+  recommendations: string[];
+}
+
 export type MarketReport = {
   executiveSummary: string;
   quantitativeData: QuantitativeData[];
   qualitativeData: QualitativeData[];
   keyInsights: string[];
   marketingContent: string[];
+  launchStrategy: LaunchPhase[];
 };

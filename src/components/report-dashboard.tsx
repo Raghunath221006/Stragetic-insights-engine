@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ArrowLeft, BarChart2, FileText, Lightbulb, MessageCircle, Mic, Smile, Frown, Meh, PenSquare } from "lucide-react";
+import { ArrowLeft, BarChart2, FileText, Lightbulb, MessageCircle, Mic, Smile, Frown, Meh, PenSquare, Rocket, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 
 interface ReportDashboardProps {
   report: MarketReport;
@@ -68,23 +69,49 @@ export function ReportDashboard({ report, topic, onReset }: ReportDashboardProps
           </CardContent>
         </Card>
 
-        {/* Key Insights */}
-        <Card className="lg:col-span-1">
+        {/* Product Launch Strategy */}
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="w-6 h-6" />
-              Key Insights
+              <Rocket className="w-6 h-6 text-accent" />
+              Product Launch Strategy
             </CardTitle>
+            <CardDescription>Actionable recommendations for launching a new product in the {topic} market.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3">
-              {report.keyInsights.map((insight, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                  <span className="text-foreground/90">{insight}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                    <h4 className="font-semibold mb-4 text-lg flex items-center gap-2"><Lightbulb className="w-5 h-5"/>Key Insights</h4>
+                    <ul className="space-y-3">
+                      {report.keyInsights.map((insight, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="text-foreground/90">{insight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-4 text-lg">Launch Phases</h4>
+                  <Accordion type="single" collapsible defaultValue="item-0">
+                    {report.launchStrategy.map((phase, index) => (
+                      <AccordionItem key={index} value={`item-${index}`}>
+                        <AccordionTrigger className="text-base font-medium">{phase.phaseName}</AccordionTrigger>
+                        <AccordionContent>
+                          <ul className="space-y-3 pt-2">
+                            {phase.recommendations.map((rec, recIndex) => (
+                               <li key={recIndex} className="flex items-start gap-3">
+                                  <CheckCircle className="w-4 h-4 text-green-500 mt-1 shrink-0" />
+                                  <span className="text-foreground/90">{rec}</span>
+                                </li>
+                            ))}
+                          </ul>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -95,7 +122,7 @@ export function ReportDashboard({ report, topic, onReset }: ReportDashboardProps
               <BarChart2 className="w-6 h-6" />
               Quantitative Analysis
             </CardTitle>
-            <CardDescription>Market overview of leading brands in the wireless headphones sector.</CardDescription>
+            <CardDescription>Market overview of leading brands in the {topic} sector.</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -122,18 +149,17 @@ export function ReportDashboard({ report, topic, onReset }: ReportDashboardProps
         </Card>
 
         {/* Sentiment Analysis */}
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-1">
           <CardHeader>
              <CardTitle className="flex items-center gap-2">
               <MessageCircle className="w-6 h-6" />
-              Qualitative Sentiment Analysis
+              Sentiment Analysis
             </CardTitle>
-            <CardDescription>Analysis of customer reviews and comments from public sources.</CardDescription>
+            <CardDescription>Analysis of customer reviews.</CardDescription>
           </CardHeader>
-          <CardContent className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
-              <h4 className="font-semibold mb-4 text-center">Sentiment Distribution</h4>
-              <ResponsiveContainer width="100%" height={250}>
+          <CardContent>
+              <h4 className="font-semibold mb-4 text-center text-sm">Sentiment Distribution</h4>
+              <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
                   <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -149,25 +175,35 @@ export function ReportDashboard({ report, topic, onReset }: ReportDashboardProps
                   <Bar dataKey="count" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-            <div className="md:col-span-2 space-y-4 max-h-80 overflow-y-auto pr-3">
-                {report.qualitativeData.map((data, index) => (
-                    <div key={index} className="border p-4 rounded-md bg-background">
-                       <p className="text-sm text-muted-foreground italic">"{data.review}"</p>
-                       <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
-                         <div className="flex items-center gap-2">
-                            <SentimentIcon sentiment={data.analysis.sentiment} />
-                            <span className="text-sm font-semibold capitalize">{data.analysis.sentiment}</span>
-                         </div>
-                         <div className="flex gap-1.5 flex-wrap">
-                            {data.analysis.keyTopics.map(topic => (
-                                <Badge key={topic} variant="secondary">{topic}</Badge>
-                            ))}
-                         </div>
-                       </div>
-                    </div>
-                ))}
-            </div>
+          </CardContent>
+        </Card>
+
+        {/* Qualitative Details */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+             <CardTitle className="flex items-center gap-2">
+              <MessageCircle className="w-6 h-6" />
+              Qualitative Details
+            </CardTitle>
+            <CardDescription>Analysis of customer reviews and comments from public sources.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 max-h-96 overflow-y-auto pr-3">
+            {report.qualitativeData.map((data, index) => (
+                <div key={index} className="border p-4 rounded-md bg-background">
+                   <p className="text-sm text-muted-foreground italic">"{data.review}"</p>
+                   <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
+                     <div className="flex items-center gap-2">
+                        <SentimentIcon sentiment={data.analysis.sentiment} />
+                        <span className="text-sm font-semibold capitalize">{data.analysis.sentiment}</span>
+                     </div>
+                     <div className="flex gap-1.5 flex-wrap">
+                        {data.analysis.keyTopics.map(topic => (
+                            <Badge key={topic} variant="secondary">{topic}</Badge>
+                        ))}
+                     </div>
+                   </div>
+                </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -183,7 +219,7 @@ export function ReportDashboard({ report, topic, onReset }: ReportDashboardProps
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
               {report.marketingContent.map((content, index) => (
-                <div key={index} className="p-4 rounded-lg border bg-background text-center flex flex-col items-center justify-center">
+                <div key={index} className="p-4 rounded-lg border bg-background text-center flex flex-col items-center justify-center min-h-[120px]">
                     <Mic className="w-8 h-8 text-accent mb-3" />
                     <p className="font-medium italic">"{content}"</p>
                 </div>

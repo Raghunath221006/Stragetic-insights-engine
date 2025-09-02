@@ -17,6 +17,7 @@ type LoadingStep =
   | "RESEARCHING"
   | "ANALYZING"
   | "GENERATING"
+  | "STRATEGIZING"
   | "REPORTING"
   | "DONE";
 
@@ -26,10 +27,11 @@ const loadingSteps: {
   duration: number;
 }[] = [
   { key: "ORCHESTRATING", label: "Orchestrator: Decomposing user goal...", duration: 1500 },
-  { key: "RESEARCHING", label: "Research Agent: Gathering market data...", duration: 3000 },
-  { key: "ANALYZING", label: "Analytics Agent: Analyzing trends and sentiment...", duration: 4000 },
-  { key: "GENERATING", label: "Content Agent: Generating creative assets...", duration: 2500 },
-  { key: "REPORTING", label: "Analytics Agent: Compiling final report...", duration: 2000 },
+  { key: "RESEARCHING", label: "Research Agent: Gathering market data...", duration: 2500 },
+  { key: "ANALYZING", label: "Analytics Agent: Analyzing trends and sentiment...", duration: 3000 },
+  { key: "GENERATING", label: "Content Agent: Generating creative assets...", duration: 2000 },
+  { key: "STRATEGIZING", label: "Strategist Agent: Formulating launch plan...", duration: 2500 },
+  { key: "REPORTING", label: "Report Agent: Compiling final report...", duration: 1500 },
 ];
 
 export default function Home() {
@@ -83,7 +85,7 @@ export default function Home() {
     <div className="min-h-screen w-full bg-grid-white/[0.05] relative flex flex-col items-center justify-center p-4 overflow-x-hidden">
       <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
       
-      <main className="z-10 w-full max-w-5xl">
+      <main className="z-10 w-full max-w-7xl">
         <AnimatePresence mode="wait">
           {isLoading ? (
             <motion.div

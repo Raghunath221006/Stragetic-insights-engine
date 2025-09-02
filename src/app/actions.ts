@@ -4,6 +4,7 @@ import { generateExecutiveSummary } from "@/ai/flows/generate-executive-summary"
 import { analyzeCustomerSentiment } from "@/ai/flows/analyze-customer-sentiment";
 import { generateMarketingContent } from "@/ai/flows/generate-marketing-content";
 import { generateMarketResearchData } from "@/ai/flows/generate-market-research-data";
+import { generateLaunchPlan } from "@/ai/flows/generate-launch-plan";
 import type { MarketReport, QuantitativeData, QualitativeData } from "@/types";
 
 function createMarketReportText(quantitative: QuantitativeData[], qualitative: {review: string}[]): string {
@@ -51,38 +52,26 @@ export async function getMarketResearchReport(
   // Create a text-based report for other agents to use
   const reportText = createMarketReportText(quantitativeData, qualitativeData);
 
-  // 3. Analytics Agent: Generate executive summary & key insights
-  // We'll add some context to the report text for a better summary
-  const summaryPromptText = `${reportText}\n\n## Summary of Findings\nBased on the data, provide a summary of key findings and market trends.`
-  const summaryPromise = generateExecutiveSummary({ marketResearchReport: summaryPromptText });
+  // 3. Analytics Agent: Generate executive summary
+  const summaryPromise = generateExecutiveSummary({ marketResearchReport: reportText });
 
   // 4. Content Agent: Generate marketing content
   const marketingPromise = generateMarketingContent({ marketResearchReport: reportText });
   
-  // 5. Insights Agent: Generate key insights (using a separate prompt)
-  const insightsPromise = ai.generate({
-      prompt: `Based on the following market research report, extract 4 key, actionable insights for a business looking to enter or grow in this market.\n\n${reportText}`,
-      output: {
-          schema: z.object({
-              insights: z.array(z.string()),
-          }),
-      },
-  });
+  // 5. Strategist Agent: Generate key insights and a full launch plan
+  const launchPlanPromise = generateLaunchPlan({ marketResearchReport: reportText, topic });
 
 
-  const [summaryResult, marketingResult, insightsResult] = await Promise.all([summaryPromise, marketingPromise, insightsPromise]);
+  const [summaryResult, marketingResult, launchPlanResult] = await Promise.all([summaryPromise, marketingPromise, launchPlanPromise]);
   
   const report: MarketReport = {
     executiveSummary: summaryResult.executiveSummary,
     quantitativeData: quantitativeData,
     qualitativeData: qualitativeData,
-    keyInsights: insightsResult.output?.insights ?? [],
+    keyInsights: launchPlanResult.keyInsights,
     marketingContent: marketingResult.marketingContentExamples,
+    launchStrategy: launchPlanResult.launchStrategy,
   };
 
   return report;
 }
-
-// We need to import these for the insights generation
-import { ai } from "@/ai/genkit";
-import { z } from "genkit";
