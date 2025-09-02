@@ -112,7 +112,7 @@ export function ReportDashboard({ report, topic, onReset }: ReportDashboardProps
                   <TableRow key={data.brand}>
                     <TableCell className="font-medium">{data.brand}</TableCell>
                     <TableCell className="text-right">{data.marketShare}%</TableCell>
-                    <TableCell className="text-right">${data.price}</TableCell>
+                    <TableCell className="text-right">₹{data.price.toLocaleString('en-IN')}</TableCell>
                     <TableCell className="text-right">{data.rating}/5</TableCell>
                   </TableRow>
                 ))}
